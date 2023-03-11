@@ -1,0 +1,216 @@
+#mainapge.html
+
+{% extends 'base/main.html' %}
+
+{% block content %}
+
+{% if request.user.is_authenticated %}
+<p>Welcome, {{ request.user }}.</p>
+<p style="text-align: right;">
+    <a href="{% url 'logout' %}">Log out</a>
+    <span style="float:left;: left;">
+        <a href="{% url 'user_profile' %}">Your profile</a>
+    </span>
+</p>
+{% else %}
+<p style="text-align: right;">
+    <a href="{% url 'register' %}">Register</a>
+    <span style="float:left;">
+        <a href="{% url 'login' %}">Log in</a>
+    </span>
+</p>
+{% endif %}
+<hr>
+<h1>Somm-E-lier</h1>
+
+<a href="{% url 'alcohol-add' %}">Add an alcohol</a>
+<br><br>
+Search for an alcohol:
+<form method="get">
+    <input type='text' name="search-key" value="{{ search_key }}">
+    <input type="submit" value="Search">
+</form>
+
+<table>
+    <tr>
+        <th>Alcohol</th>
+        <th>Type</th>
+        <th></th>
+    </tr>
+    {% for alko in alcohols %}
+    <tr>
+        <td>{{ alko.name }}</td>
+        <td>{{ alko.get_type_display }}</td>
+        <td><a href="{% url 'alco_det' alko.id %}">View</a></td>
+        <td><a href="{% url 'alcohol-change' alko.id %}">Edit</a></td>
+        <td><a href="{% url 'alcohol-remove' alko.id %}">Delete</a></td>
+    </tr>
+    {% empty %}
+    <h2>No alcohols in the database!</h2>
+    {% endfor %}
+</table>
+
+{% endblock content %}
+
+#register view
+template = render_to_string('base/email_body.html', {'name':request.user.profile.nickname})
+email = EmailMessage(
+'Welcome to Sommelier!',
+template,
+settings.EMAIL_HOST_USER,
+[request.user.email],
+)
+email.fail_silently = False
+email.send()
+print(request.user.email)
+
+
+#MainMenu Views
+def get_context_data(self, **kwargs):
+context = super().get_context_data(**kwargs)
+
+search_key = self.request.GET.get('search-key') or ''
+if search_key:
+context['alcohols'] = context['alcohols'].filter(name__icontains=search_key)
+context['search_key'] = search_key
+return context
+
+
+, error_messages={
+'required': 'Provide the name of the alcohol.',
+'invalid': 'Provide a valid name.',
+'unique': 'Such item already exists!'
+}
+
+, error_messages={
+'required': 'Provide the volume of the alcohol in litres.',
+'invalid': 'Provide a valid value!'
+}
+
+
+#wziente z profileView view
+def get(self, request, *args, **kwargs):
+prof = request.user.profile
+context = {'profile': prof}
+return self.render_to_response(context)
+
+
+
+
+# homepage.html
+{% if request.user.is_authenticated %}
+<p>Welcome, {{ request.user.profile.nickname }}.</p>
+<p style="text-align: right;">
+    <a href="{% url 'logout' %}">Log out</a>
+    <span style="float:left;">
+        <a href="{% url 'user_profile' request.user.profile.id %}">Your profile</a>
+    </span>
+</p>
+{% else %}
+<p style="text-align: right;">
+    <a href="{% url 'register' %}">Register</a>
+    <span style="float:left;">
+        <a href="{% url 'login' %}">Log in</a>
+    </span>
+</p>
+{% endif %}
+<hr>
+{% include 'base/messages.html' %}
+<h1>Somm-E-lier</h1>
+
+
+{% comment %} <div class="big-container">
+    <div class="alc-container">
+        <div class="alc-description">
+            <h1>{{ alcohol }}</h1>
+            <h3>Type: {{ alcohol.get_type_display }}</h3>
+            <h3>Volume (L): {{ alcohol.volume_l }}</h3>
+            <h3>Alcohol percentage (%): {{ alcohol.percentage }}</h3>
+            <br>
+        </div>
+        <div class="alc-like">
+            <h4>Description: {{ alcohol.description }}</h4>
+            {% if request.user.is_authenticated %}
+            <form action="{% url 'like-alcohol' %}" method="post">
+                {% csrf_token %}
+                <input type="hidden" name="alcohol_id" value="{{ alcohol.id }}">
+                {% if request.user not in alcohol.likes.all %}
+                <button type="submit">Like</button>
+                {% else %}
+                <button type="submit">Dislike</button>
+                {% endif %}
+            </form>
+            {% endif %}
+            <strong> {{ alcohol.likes.all.count }} users liked {{ alcohol }}.</strong>
+            <br>
+            {% if request.user.is_authenticated %}
+            Rate:
+
+
+            <div id="stars">
+                <button class="fa fa-star fa-5x my_button " id="first"></button>
+                <button class="fa fa-star fa-5x my_button " id="second"></button>
+                <button class="fa fa-star fa-5x my_button " id="third"></button>
+                <button class="fa fa-star fa-5x my_button " id="fourth"></button>
+                <button class="fa fa-star fa-5x my_button " id="fifth"></button>
+            </div>
+        </div>
+    </div>
+
+    <div id="opinion" style="display: none">
+        <label for="op">Your opinion:</label><input type="text" id="op">
+        <button type="submit" id="send_review">Submit</button>
+    </div>
+
+    <div id="alcohol_reviews" class="comment-container">
+        {% for review in reviews %}
+        <div class="review_set">
+            <div class="review">
+                <p>{{ review.user }} rated this alcohol {{ review.rate }}/5.</p>
+                <p>Comment: {{ review.comment }}</p>
+            </div>
+            {% if request.user == review.user %}
+            <div class="del_review"><a href="">Delete</a> your review</div>
+            {% endif %}
+        </div>
+
+        {% endfor %}
+    </div>
+
+    {% endif %}
+    <p> Return to the <a href="{% url 'main_menu' %}">main page</a></p>
+    {% endcomment %}
+
+
+
+
+    # alcohol_unverified
+    <table>
+        <tr>
+            <th>Alcohol</th>
+        </tr>
+        {% for alko in alcohol %}
+        {% if alko.verified == False %}
+        <tr>
+            <td>{{ alko.name }}</td>
+            <td><a href="{% url 'alco_det' alko.id %}">View</a></td>
+            {% for group in request.user.groups.all %}
+            {% if group.name == 'moderator' %}
+            <td><a href="{% url 'alcohol-change' alko.id %}">Edit</a></td>
+            <td></td>
+            <td>
+                <form action="{% url 'verify' %}" method="post">
+                    {% csrf_token %}
+                    <input type="hidden" name="alcohol_id" value="{{ alko.id }}">
+                    <button type="submit">Verify alcohol</button>
+                </form>
+            </td>
+            <td><a href="{% url 'alcohol-remove' alko.id %}">Delete</a></td>
+            {% endif %}
+            {% endfor %}
+        </tr>
+        {% endif %}
+        {% empty %}
+        <h2>No alcohols in the database!</h2>
+        {% endfor %}
+    </table>
