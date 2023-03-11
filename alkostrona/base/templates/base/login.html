@@ -1,0 +1,18 @@
+{% extends 'base/main.html' %}
+{% block content %}
+{% load static %}
+<div class="logincontainer">
+    <div class="loginform">
+        <h1>Login to Sommelier</h1>
+        <form method="post">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <input type="submit" value="Log in">
+        </form>
+        <br>
+        <p>Forgot password? <a href="{% url 'forgot_password' %}">Click here!</a></p>
+        <hr>
+        <p><b>No account? Register <a href="{% url 'register' %}">here!</a></b></p>
+    </div>
+</div>
+{% endblock %}

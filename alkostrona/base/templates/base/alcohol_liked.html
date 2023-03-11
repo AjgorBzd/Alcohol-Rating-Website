@@ -1,0 +1,52 @@
+{% extends 'base/main.html' %}
+{% block content %}
+{% load static %}
+<div class="logincontainer">
+    <div class="registerform">
+        <h3>List of alcohols liked by you:</h3>
+        <br>
+        {% if request.user.likes.count > 0 %}
+        Search for alcohol:
+        <form method="get">
+            <input type='text' name="search-key" value="{{ search_key }}">
+            <input type="submit" value="Search">
+        </form>
+        <br>
+        <p>Liked alcohols: {{ request.user.likes.count }}</p>
+
+        <div class="alcohol-list">
+            {% for alko in alcohols %}
+            {% if alko in request.user.likes.all %}
+
+            <div class="alcohol-card">
+                <div class="alcohol-image"> <img src="{{ alko.alcohol_picture.url }}"></img></div>
+                <div class="alcohol-title"> {{ alko.name }}</div>
+                <div class="alcohol-description">{{ alko.description }}</div>
+                <div class="alcohol-options">
+                    <a href="{% url 'alco_det' alko.id %}">
+                        <div class="button-alcohol" role="button">View</div>
+                    </a>
+                    {% for group in request.user.groups.all %}
+                    {% if group.name == 'moderator' %}
+                    <a href="{% url 'alcohol-change' alko.id %}">
+                        <div class="button-alcohol" role="button">Edit</div>
+                    </a></a>
+                    <a href="{% url 'alcohol-remove' alko.id %}">
+                        <div class="button-alcohol" role="button">Delete</div>
+                    </a></a>
+                    {% endif %}
+                    {% endfor %}
+                </div>
+            </div>
+
+            {% endif %}
+            {% endfor %}
+        </div>
+
+        {% else %}
+        <br>
+        <p>You didn't like any alcohols yet!</p>
+        {% endif %}
+    </div>
+</div>
+{% endblock content %}

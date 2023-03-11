@@ -1,0 +1,14 @@
+{% extends 'base/main.html' %}
+{% block content %}
+{% load static %}
+<div class="logincontainer">
+    <div class="loginform">
+        <h2>Add an alcohol:</h2>
+        <form method="post" action="" enctype="multipart/form-data">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <input type="submit" value="Submit">
+        </form>
+    </div>
+</div>
+{% endblock %}

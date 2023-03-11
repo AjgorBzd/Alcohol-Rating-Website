@@ -1,0 +1,23 @@
+{% extends 'base/main.html' %}
+{% block content %}
+{% load static %}
+
+
+
+<div class="welcome">
+    Browse for any alcohol using the sections below!
+</div>
+<div class="categories">
+    Categories:
+</div>
+<div class="alcohol-list">
+    {% for code, name in alcohol_types %}
+    <a style="text-decoration: none; color: black;" href="{% url 'alcohol_type' name%}">
+        <div class="alcohol-home">
+            <div class="alcohol-title-home">{{ name }}s</div>
+        </div>
+    </a>
+    {% endfor %}
+</div>
+
+{% endblock %}

@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    {% load static %}
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="{% static 'css/style.css' %}" rel="stylesheet" />
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+
+    <title>Sommelier</title>
+</head>
+
+<body>
+    <header>
+        <div class="header-container">
+            <h1 class="logo"><a style="text-decoration:none; color: white;" href="{% url 'main_menu' %}">So๓๓elièr</a>
+            </h1>
+            {% if request.user.is_authenticated %}
+            <div class="user">Welcome, {{request.user.profile.nickname}}.</div>
+            {% endif %}
+            <nav>
+                <ul>
+                    {% if request.user.is_authenticated %}
+                    {% for group in request.user.groups.all %}
+                    {% if group.name == 'moderator' %}
+                    <li><a class="ver-alc" href="{% url 'unverified' %}">Check submitted alcohols</a></li>
+                    {% endif %}
+                    {% endfor %}
+                    <li><a class="add-alc" href="{% url 'alcohol-add' %}">Add an alcohol</a></li>
+                    <li><a href="{% url 'user_profile' request.user.profile.id %}">Your profile</a></li>
+                    <li><a href="{% url 'logout' %}">Log out</a></li>
+                    {% else %}
+                    <li><a href="{% url 'register' %}">Register</a></li>
+                    <li><a href="{% url 'login' %}">Log in</a></li>
+                    {% endif %}
+                </ul>
+            </nav>
+        </div>
+    </header>
+    <div class="content-div">
+        {% include 'base/messages.html' %}
+        {% block content %}
+        {% endblock %}
+    </div>
+    <footer>
+        <div class="footer-container">
+            <div class="footer-title">
+                <h6>B&W &#169; Inc. 2023 </h6>
+            </div>
+        </div>
+    </footer>
+</body>
+
+</html>

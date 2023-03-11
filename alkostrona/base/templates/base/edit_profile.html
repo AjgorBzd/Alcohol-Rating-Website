@@ -1,0 +1,17 @@
+{% extends 'base/main.html' %}
+{% block content %}
+{% load static %}
+<div class="logincontainer">
+    <div class="loginform">
+        <h2>Edit your profile</h2>
+        <form method="post" action="" enctype="multipart/form-data">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <input type="submit" value="Submit">
+        </form>
+        <br>
+        <hr>
+        <p>Want to change your password? <a href="{% url 'password_change' %}">Click here!</a></p>
+    </div>
+</div>
+{% endblock %}

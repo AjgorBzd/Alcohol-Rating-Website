@@ -1,0 +1,44 @@
+{% extends 'base/main.html' %}
+{% block content %}
+<div class="logincontainer">
+    <div class="registerform">
+        <h2>Verify or delete alcohols submitted by community</h2>
+
+        <div class="alcohol-list">
+            {% for alko in alcohol %}
+            {% if alko.verified == False %}
+            <div class="alcohol-card">
+                <div class="alcohol-image"> <img src="{{ alko.alcohol_picture.url }}"></img></div>
+                <div class="alcohol-title"> {{ alko.name }}</div>
+                <div class="alcohol-description">{{ alko.description }}</div>
+                <div class="alcohol-options">
+                    <a href="{% url 'alco_det' alko.id %}">
+                        <div class="button-alcohol" role="button">View</div>
+                    </a>
+                    {% for group in request.user.groups.all %}
+                    {% if group.name == 'moderator' %}
+                    <a href="{% url 'alcohol-change' alko.id %}">
+                        <div class="button-alcohol" role="button">Edit</div>
+                    </a></a>
+                    <a href="{% url 'alcohol-remove' alko.id %}">
+                        <div class="button-alcohol" role="button">Delete</div>
+                    </a></a>
+                    {% endif %}
+                    {% endfor %}
+                </div>
+                <div class="alcohol-options">
+                    <form action="{% url 'verify' %}" method="post">
+                        {% csrf_token %}
+                        <input type="hidden" name="alcohol_id" value="{{ alko.id }}">
+                        <button class="button-alcohol" type="submit">Verify alcohol</button>
+                    </form>
+                </div>
+            </div>
+            {%endif%}
+            {%endfor%}
+        </div>
+
+
+    </div>
+</div>
+{% endblock content %}

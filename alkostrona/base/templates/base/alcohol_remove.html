@@ -1,0 +1,14 @@
+{% extends 'base/main.html' %}
+{% block content %}
+{% load static %}
+<div class="logincontainer">
+    <div class="registerform">
+        <form method="post">
+            {% csrf_token %}
+            <p style="align-items: center; align-text: center;">Are you sure you want to remove this alcohol? <b>This
+                    operation cannot be undone.</b></p>
+            <input type="submit" value="Remove">
+        </form>
+    </div>
+</div>
+{% endblock %}

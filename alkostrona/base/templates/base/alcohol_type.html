@@ -1,0 +1,51 @@
+{% extends 'base/main.html' %}
+
+{% block content %}
+
+
+<div class="title-bar">
+    <h1>{{ request.resolver_match.kwargs.type }}s</h1>
+</div>
+<div class="search-bar">
+    <div class="search-bar">
+        <form action="" class="search-bar">
+            <input type="text" name="search-key" value="{{ search_key }}">
+            <button class="search-btn" type="submit">
+                <span>Search</span>
+            </button>
+        </form>
+    </div>
+</div>
+<div class="alcohol-list">
+    {% for alko in alcohol %}
+    {% if alko.verified %}
+    {% if alko.get_type_display == request.resolver_match.kwargs.type %}
+    <div class="alcohol-card">
+        <div class="alcohol-image"> <img src="{{ alko.alcohol_picture.url }}"></img></div>
+        <div class="alcohol-title"> {{ alko.name }}</div>
+        <div class="alcohol-description">{{ alko.description }}</div>
+        <div class="alcohol-options">
+            <a href="{% url 'alco_det' alko.id %}">
+                <div class="button-alcohol" role="button">View</div>
+            </a>
+            {% for group in request.user.groups.all %}
+            {% if group.name == 'moderator' %}
+            <a href="{% url 'alcohol-change' alko.id %}">
+                <div class="button-alcohol" role="button">Edit</div>
+            </a></a>
+            <a href="{% url 'alcohol-remove' alko.id %}">
+                <div class="button-alcohol" role="button">Delete</div>
+            </a></a>
+            {% endif %}
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+    {% endif %}
+    {% empty %}
+
+    {% endfor %}
+</div>
+
+
+{% endblock content %}

@@ -1,0 +1,17 @@
+{% extends "base/main.html" %}
+{% block content %}
+{% load static %}
+<div class="logincontainer">
+    <div class="registerform">
+        <img alt="Profile picture" src="{{ profile.profile_picture.url }}" width="150px" height="150px">
+        <b><i>
+                <h2>{{ profile.nickname }}</h2>
+            </i></b>
+        <p>Username: {{ profile.user.username }}</p>
+        <p>Description: {{ profile.desc }}</p>
+        <p><a href="{% url 'liked_alcohols' profile.id %}">Your liked alcohols</a></p>
+        <br>
+        <p><a href="{% url 'profile_change' profile.id %}">Edit your profile</a></p>
+    </div>
+</div>
+{% endblock content %}

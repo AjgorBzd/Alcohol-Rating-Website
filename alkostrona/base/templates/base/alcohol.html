@@ -1,0 +1,105 @@
+{% extends 'base/main.html' %}
+{% block content %}
+{% load static %}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+<div class="container">
+    <div class="box box-1">
+        <div class="alc-container">
+            <div class="alc-photo"><img alt="Alcohol picture" src="{{ alcohol.alcohol_picture.url }}"></div>
+            <div class="alc-description">
+                <div class="alc-title">
+                    <h1 style="margin:4px">{{ alcohol }}</h1>
+                </div>
+                <div class="alc-stats">
+                    <h5 style="margin:1px">Type: {{ alcohol.get_type_display }}<br>
+                        Volume (L): {{ alcohol.volume_l }}<br>
+                        Alcohol percentage (%): {{ alcohol.percentage }}<br></h5>
+                </div>
+                <div class="alc-detailed">
+                    <h4>Description:</h4>
+                    <h4>{{ alcohol.description }}</h4>
+                </div>
+            </div>
+        </div>
+        <div class="alc-rating">
+            {% if request.user.is_authenticated %}
+            <div id="stars">
+                {% for review in reviews %}
+                {% if request.user == review.user %}
+                <h1>{{review.rate}}</h1>
+                {% endif %}
+                {% endfor %}
+                <button class="fa fa-star fa-5x my_button " id="first"></button>
+                <button class="fa fa-star fa-5x my_button " id="second"></button>
+                <button class="fa fa-star fa-5x my_button " id="third"></button>
+                <button class="fa fa-star fa-5x my_button " id="fourth"></button>
+                <button class="fa fa-star fa-5x my_button " id="fifth"></button>
+
+                <div id="opinion" style="display: none">
+                    <label for="op">Your opinion:</label><input type="text" id="op">
+                    <button type="submit" id="send_review">Submit</button>
+                </div>
+            </div>
+            {%endif%}
+            <div id="opinion" style="display: none">
+                <label for="op">Your opinion:</label><input type="text" id="op">
+                <button type="submit" id="send_review">Submit</button>
+            </div>
+            {% if request.user.is_authenticated %}
+            <form action="{% url 'like-alcohol' %}" method="post">
+                {% csrf_token %}
+                <input type="hidden" name="alcohol_id" value="{{ alcohol.id }}">
+                {% if request.user not in alcohol.likes.all %}
+                <button type="submit" class="fa fa-solid fa-heart"></button>
+                {% else %}
+                <button type="submit" class="fa fa-regular fa-heart" style="color: red;"></button>
+                {% endif %}
+                <strong> {{ alcohol.likes.all.count }} users liked {{ alcohol }}.</strong>
+            </form>
+            {% endif %}
+            <br>
+        </div>
+    </div>
+
+
+    <div class="box box-2">
+        <div class="opinion-container" id="alcohol_reviews">
+            {% for review in reviews %}
+            <div class="opinion-card">
+                <div class="top-card">
+                    <div class="card-jpg"><img alt="Profile picture" src="{{ review.user.profile.profile_picture.url }}"
+                            width="100px" height="100px">
+                    </div>
+                    <div class="card-rating">{{review.user.profile.nickname}} rated {{ review.rate }}/5</div>
+
+                </div>
+                <div class="bottom-card">
+                    <div class="card_dsc">
+                        {{ review.comment }}
+                    </div>
+                    <div class="card_button">
+                        {% if request.user == review.user %}
+                        <form action="{% url 'delete_review' %}" method="post">
+                            {% csrf_token %}
+                            <input type="hidden" name="alcohol_id" value="{{ alcohol.id }}">
+                            <input type="hidden" name="review_id" value="{{ review.id }}">
+                            <button type="submit" class="del_review">Delete your review</button>
+                        </form>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            {% endfor %}
+
+        </div>
+
+    </div>
+</div>
+
+</div>
+<script type="module" src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"></script>
+<script nomodule src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.js"></script>
+<script type="text/javascript" src="{% static 'js/main.js' %}" data-ratings="{{user_ratings}}"
+    data-currentuser="{{request.user}}" data-photo="{{photo}}"></script>
+{% endblock content %}

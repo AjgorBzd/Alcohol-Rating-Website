@@ -1,0 +1,8 @@
+{% autoescape off %}
+    {{ user.profile.nickname }},
+    Welcome to Sommelier!
+
+    Please click on the link below to confirm your email address:
+
+    http://{{ domain }}{% url 'activate' uidb64=uid token=token %}
+{% endautoescape %}
